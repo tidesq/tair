@@ -17,10 +17,12 @@
 
 #include "flowrate.h"
 
-namespace tair {
+namespace tair
+{
 
-class flow_limit_handler {
-public:
+class flow_limit_handler
+{
+  public:
     flow_limit_handler();
 
     bool is_over_flow();
@@ -34,19 +36,19 @@ public:
     void set_last_time(time_t last) { this->last_time_ = last; }
 
     const static int32_t MAX_THRESHOLD = 1000;
-    const static time_t UP_INTERVAL = 10; // 10s
+    const static time_t UP_INTERVAL = 10;  // 10s
     const static time_t DOWN_INTERVAL = 5; // 10s
-    const static double UP_FACTOR = 0.3;
-    const static double DOWN_FACTOR = 0.5;
+    const constexpr static double UP_FACTOR = 0.3;
+    const constexpr static double DOWN_FACTOR = 0.5;
 
-private:
+  private:
     time_t last_time_;
     int32_t threshold_;
 };
 
-class flow_admin {
-public:
-
+class flow_admin
+{
+  public:
     ~flow_admin() { clear(); }
 
     bool is_over_flow(int64_t server_id, int32_t ns);
@@ -63,7 +65,7 @@ public:
 
     bool should_check_flow_down(int64_t server_id, int32_t ns);
 
-private:
+  private:
     typedef std::tr1::unordered_map<int32_t, flow_limit_handler *> flow_limit_handler_map;
     typedef std::tr1::unordered_map<int64_t, flow_limit_handler_map> flow_limit_set;
 
@@ -76,7 +78,6 @@ private:
     flow_limit_handler *make_handler(int64_t server_id, int32_t ns);
 };
 
-}
-
+} // namespace tair
 
 #endif

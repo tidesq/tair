@@ -22,10 +22,10 @@ AC_ARG_WITH([release],
          [use optimize (default is NO)]),
          [
           if test "$withval" = "yes"; then
-            CXXFLAGS="-g -O2 -finline-functions -fno-strict-aliasing -Wall -D__USE_LARGEFILE64 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DNDEBUG"
+            CXXFLAGS="-g -O2 -finline-functions -Wno-error=format-truncation -Wno-error=literal-suffix -Wno-error=class-memaccess -Wno-class-memaccess -fno-strict-aliasing -Wall -D__USE_LARGEFILE64 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DNDEBUG"
           fi
           ],
-          [CXXFLAGS="-g -Wall -D__USE_LARGEFILE64 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DTAIR_DEBUG -D__MIXIN_DEBUG__"]
+          [CXXFLAGS="-g -Wall -Wno-error=format-truncation -Wno-error=literal-suffix -Wno-error=class-memaccess -Wno-class-memaccess  -D__USE_LARGEFILE64 -D_FILE_OFFSET_BITS=64 -D_LARGE_FILE  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DTAIR_DEBUG -D__MIXIN_DEBUG__"]
           )
 
 AC_ARG_WITH([internaltest],

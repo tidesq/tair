@@ -2,7 +2,7 @@ source_list=config.cpp defaultrunnable.cpp filequeue.cpp \
             filequeuethread.cpp fileutil.cpp process.cpp \
             queuethread.cpp stringutil.cpp tblog.cpp \
             tbnetutil.cpp tbtimeutil.cpp tbrwlock.cpp\
-            Utility.cpp Time.cpp Cond.cpp RecMutex.cpp \
+            Utility.cpp TbTime.cpp Cond.cpp RecMutex.cpp \
             Shared.cpp TbThread.cpp StaticMutex.cpp Mutex.cpp\
             Exception.cpp ThreadException.cpp CtrlCHandler.cpp\
             Timer.cpp ThreadPool.cpp Service.cpp\
@@ -19,7 +19,7 @@ include_HEADERS=atomic.h config.h defaultrunnable.h filequeue.h \
                threadcond.h thread.h threadmutex.h linklist.h \
                tbrwlock.h tblockguard.h PublicDefine.h Memory.hpp\
                Cond.h Functional.h Lock.h Network.h EventHandler.h\
-               Service.h ThreadException.h Time.h Handle.h Monitor.h\
+               Service.h ThreadException.h TbTime.h Handle.h Monitor.h\
                RecMutex.h Shared.h TbThread.h Timer.h CtrlCHandler.h\
                Exception.h Mutex.h StaticMutex.h ThreadPool.h Utility.h \
 	             profiler.h bytebuffer.h WarningBuffer.h

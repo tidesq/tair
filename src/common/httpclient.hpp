@@ -17,21 +17,25 @@
 #include <sstream>
 #include <iostream>
 
-namespace System {
-namespace Net {
+namespace System
+{
+namespace Net
+{
 class HttpWebRequest;
 
 class HttpWebResponse;
 
-class HttpGobal {
-public:
+class HttpGobal
+{
+  public:
     static void Initialize();
 
     static void Destroy();
 };
 
-class HttpStatus {
-public:
+class HttpStatus
+{
+  public:
     HttpStatus() {}
 
     long GetCode() { return code_; }
@@ -42,18 +46,20 @@ public:
 
     void SetDescription(const std::string &description) { description_ = description; }
 
-    friend std::ostream &operator<<(std::ostream &os, const HttpStatus &status) {
+    friend std::ostream &operator<<(std::ostream &os, const HttpStatus &status)
+    {
         os << status.code_;
         return os;
     }
 
-private:
+  private:
     int code_;
     std::string description_;
 };
 
-class HttpHeader {
-public:
+class HttpHeader
+{
+  public:
     const static std::string Accept;
     const static std::string Connection;
     const static std::string ContentLength;
@@ -67,40 +73,49 @@ public:
     const static std::string UserAgent;
 
     const static std::string None;
-public:
+
+  public:
     typedef std::map<std::string, std::string>::iterator Iterator;
-public:
+
+  public:
     HttpHeader() {}
 
     ~HttpHeader() {}
 
-    HttpHeader::Iterator begin() {
+    HttpHeader::Iterator begin()
+    {
         return header_.begin();
     }
 
-    HttpHeader::Iterator end() {
+    HttpHeader::Iterator end()
+    {
         return header_.end();
     }
 
-    inline void Put(const std::string &name, const std::string &value) {
-        header_.insert(std::make_pair<std::string, std::string>(name, value));
+    inline void Put(const std::string &name, const std::string &value)
+    {
+        //header_.insert(std::make_pair<std::string, std::string>(name, value));
+        header_.insert(std::make_pair(name, value));
     }
 
-    inline const std::string &Get(const std::string &name) {
+    inline const std::string &Get(const std::string &name)
+    {
         std::map<std::string, std::string>::iterator it = header_.find(name);
         return (it == header_.end() ? HttpHeader::None : it->second);
     }
 
-private:
+  private:
     std::map<std::string, std::string> header_;
-private:
+
+  private:
     friend class HttpWebResponse;
 
     friend class HttpWebRequest;
 };
 
-class HttpWebResponse {
-public:
+class HttpWebResponse
+{
+  public:
     inline std::stringstream &GetResponseStream() { return os_; }
 
     inline const std::string &GetHeader(const std::string &name) { return header_.Get(name); }
@@ -113,35 +128,41 @@ public:
 
     inline void Destroy() { delete this; }
 
-private:
+  private:
     HttpWebResponse()
-            : status_(),
-              os_(std::ios_base::in | std::ios_base::out | std::ios_base::binary) {}
+        : status_(),
+          os_(std::ios_base::in | std::ios_base::out | std::ios_base::binary) {}
 
-private:
+  private:
     std::string server_;
     std::string uri_;
     std::string version_;
     HttpStatus status_;
     HttpHeader header_;
     std::stringstream os_;
-private:
+
+  private:
     friend class HttpWebRequest;
 };
 
-class HttpWebRequest {
-public:
-    struct Method {
+class HttpWebRequest
+{
+  public:
+    struct Method
+    {
         const static std::string POST;
         const static std::string GET;
         const static std::string DELETE;
     };
-public:
-    inline static HttpWebRequest *Create(std::string &uri) {
+
+  public:
+    inline static HttpWebRequest *Create(std::string &uri)
+    {
         return new HttpWebRequest(uri);
     }
 
-    inline void Destroy() {
+    inline void Destroy()
+    {
         delete this;
     }
 
@@ -157,7 +178,7 @@ public:
 
     HttpWebResponse *GetResponse();
 
-private:
+  private:
     HttpWebRequest(std::string &uri);
 
     static size_t callback(void *buffer, size_t size, size_t nmemb, void *data);
@@ -166,13 +187,13 @@ private:
 
     HttpWebResponse *GetNetResponse(const char *uri);
 
-private:
+  private:
     std::string uri_;
     std::string method_;
     HttpHeader header_;
     std::stringstream is_;
 };
-}
-}
+} // namespace Net
+} // namespace System
 
 #endif

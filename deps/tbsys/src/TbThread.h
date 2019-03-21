@@ -14,12 +14,12 @@
  */
 
 #ifndef TBSYSEX_THREAD_H
-#define TBSYSEX_THREAD_H 
+#define TBSYSEX_THREAD_H
 #include "Shared.h"
 #include "Handle.h"
 #include "Mutex.h"
 #include "Cond.h"
-#include "Time.h"
+#include "TbTime.h"
 
 namespace tbutil
 {
@@ -29,8 +29,7 @@ namespace tbutil
 */
 class Thread : virtual public tbutil::Shared
 {
-public:
-
+  public:
     Thread();
     virtual ~Thread();
 
@@ -43,7 +42,7 @@ public:
      * 
      * @return 
      */
-    int  start(size_t stackSize= 0);
+    int start(size_t stackSize = 0);
 
     /** 
      * @brief 如果底层的线程还没有退出(也就是说，还没有离开它的run 方
@@ -51,19 +50,19 @@ public:
      * 
      * @return 
      */
-    bool isAlive() const; 
+    bool isAlive() const;
 
     /** 
      * @brief 设置线程存活标志为false 
      */
-    void _done(); 
+    void _done();
 
     /** 
      * @brief 这个方法挂起发出调用的线程，直到join 所针对的线程终止为止
      * 
      * @return 
      */
-    int join();  
+    int join();
 
     /** 
      * @brief 这个方法分离一个线程。一旦线程分离，你不能再与它汇合
@@ -89,20 +88,19 @@ public:
      * 
      * @param timeout : 挂起的超时时间
      */
-    static void ssleep(const tbutil::Time& timeout);
+    static void ssleep(const tbutil::Time &timeout);
 
-protected:
-    bool  _running;   //线程运行标志
-    bool _started;    //线程是否处于开始状态
-    bool _detachable; //是否全使线程处于分离状态
-    pthread_t _thread;//线程ID
-    tbutil::Mutex _mutex;     //线程运行标志锁
-private:
-    Thread(const Thread&);            
-    Thread& operator=(const Thread&);   
+  protected:
+    bool _running;        //线程运行标志
+    bool _started;        //线程是否处于开始状态
+    bool _detachable;     //是否全使线程处于分离状态
+    pthread_t _thread;    //线程ID
+    tbutil::Mutex _mutex; //线程运行标志锁
+  private:
+    Thread(const Thread &);
+    Thread &operator=(const Thread &);
 };
 typedef tbutil::Handle<Thread> ThreadPtr;
-}//end namespace tbutil
+} //end namespace tbutil
 
 #endif
-

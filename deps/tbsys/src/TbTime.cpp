@@ -15,26 +15,25 @@
 
 #include <iomanip>
 #include <sys/time.h>
-#include "Time.h"
+#include "TbTime.h"
 #include "Exception.h"
 
 namespace tbutil
 {
-Time::Time() :
-    _usec(0)
+Time::Time() : _usec(0)
 {
 }
 
 Time Time::now(Clock clock)
 {
-    if(clock == Realtime)
+    if (clock == Realtime)
     {
         struct timeval tv;
-        if(gettimeofday(&tv, 0) < 0)
+        if (gettimeofday(&tv, 0) < 0)
         {
 #ifdef _NO_EXCEPTION
-            TBSYS_LOG(ERROR,"%s","SyscallException");
-            assert( 0 );
+            TBSYS_LOG(ERROR, "%s", "SyscallException");
+            assert(0);
 #else
             throw SyscallException(__FILE__, __LINE__, errno);
 #endif
@@ -44,10 +43,10 @@ Time Time::now(Clock clock)
     else // Monotonic
     {
         struct timespec ts;
-        if(clock_gettime(CLOCK_MONOTONIC, &ts) < 0)
+        if (clock_gettime(CLOCK_MONOTONIC, &ts) < 0)
         {
 #ifdef _NO_EXCEPTION
-            TBSYS_LOG(ERROR,"%s","SyscallException");
+            TBSYS_LOG(ERROR, "%s", "SyscallException");
             assert(0);
 #else
             throw SyscallException(__FILE__, __LINE__, errno);
@@ -114,7 +113,7 @@ std::string Time::toDateTime() const
 {
     time_t time = static_cast<long>(_usec / 1000000);
 
-    struct tm* t;
+    struct tm *t;
     struct tm tr;
     localtime_r(&time, &tr);
     t = &tr;
@@ -142,12 +141,12 @@ std::string Time::toDuration() const
     using namespace std;
 
     ostringstream os;
-    if(days != 0)
+    if (days != 0)
     {
         os << days << "d ";
     }
     os << setfill('0') << setw(2) << hours << ":" << setw(2) << mins << ":" << setw(2) << secs;
-    if(usecs != 0)
+    if (usecs != 0)
     {
         os << "." << setw(3) << (usecs / 1000);
     }
@@ -155,9 +154,8 @@ std::string Time::toDuration() const
     return os.str();
 }
 
-Time::Time(Int64 usec) :
-    _usec(usec)
+Time::Time(Int64 usec) : _usec(usec)
 {
 }
 
-}//end namespace tbutil
+} //end namespace tbutil

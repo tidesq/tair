@@ -21,7 +21,6 @@
 #include <unistd.h>
 #include <bits/time.h>
 #include "TbThread.h"
-#include "Time.h"
 #include "ThreadException.h"
 #include "Cond.h"
 #include "PublicDefine.h"
@@ -29,11 +28,10 @@
 using namespace std;
 namespace tbutil
 {
-Thread::Thread() :
-    _running(false),
-    _started(false),
-    _detachable(false),
-    _thread(0)
+Thread::Thread() : _running(false),
+                   _started(false),
+                   _detachable(false),
+                   _thread(0)
 {
 }
 
@@ -41,25 +39,25 @@ Thread::~Thread()
 {
 }
 
-extern "C" 
+extern "C"
 {
-static void* startHook(void* arg)
-{
-    ThreadPtr thread;
-    try
+    static void *startHook(void *arg)
     {
-        Thread* rawThread = static_cast<Thread*>(arg);
-        thread = rawThread;
-        rawThread->__decRef();
-        thread->run();
+        ThreadPtr thread;
+        try
+        {
+            Thread *rawThread = static_cast<Thread *>(arg);
+            thread = rawThread;
+            rawThread->__decRef();
+            thread->run();
+        }
+        catch (...)
+        {
+            std::terminate();
+        }
+        thread->_done();
+        return 0;
     }
-    catch(...)
-    {
-        std::terminate();
-    }
-    thread->_done();
-    return 0;
-}
 }
 
 int Thread::start(size_t stackSize)
@@ -67,11 +65,11 @@ int Thread::start(size_t stackSize)
     ThreadPtr keepMe = this;
     Mutex::Lock sync(_mutex);
 
-    if(_started)
+    if (_started)
     {
 #ifdef _NO_EXCEPTION
-        JUST_RETURN( _started == true , -1 );
-        TBSYS_LOG(ERROR,"%s","ThreadStartedException");
+        JUST_RETURN(_started == true, -1);
+        TBSYS_LOG(ERROR, "%s", "ThreadStartedException");
 #else
         throw ThreadStartedException(__FILE__, __LINE__);
 #endif
@@ -79,40 +77,40 @@ int Thread::start(size_t stackSize)
 
     __incRef();
 
-    if(stackSize > 0)
+    if (stackSize > 0)
     {
         pthread_attr_t attr;
-        int rt = pthread_attr_init(&attr); 
+        int rt = pthread_attr_init(&attr);
 #ifdef _NO_EXCEPTION
-        if ( 0 != rt )
+        if (0 != rt)
         {
             __decRef();
-            TBSYS_LOG(ERROR,"%s","ThreadSyscallException");
+            TBSYS_LOG(ERROR, "%s", "ThreadSyscallException");
             return -1;
         }
 #else
-        if ( 0 != rt )
+        if (0 != rt)
         {
             __decRef();
             throw ThreadSyscallException(__FILE__, __LINE__, rt);
         }
 #endif
 
-        if(stackSize < PTHREAD_STACK_MIN)
+        if (stackSize < PTHREAD_STACK_MIN)
         {
             stackSize = PTHREAD_STACK_MIN;
         }
 
         rt = pthread_attr_setstacksize(&attr, stackSize);
 #ifdef _NO_EXCEPTION
-        if ( 0 != rt )
+        if (0 != rt)
         {
             __decRef();
-            TBSYS_LOG(ERROR,"%s","ThreadSyscallException");
+            TBSYS_LOG(ERROR, "%s", "ThreadSyscallException");
             return -1;
         }
 #else
-        if( 0 != rt )
+        if (0 != rt)
         {
             __decRef();
             throw ThreadSyscallException(__FILE__, __LINE__, rt);
@@ -120,14 +118,14 @@ int Thread::start(size_t stackSize)
 #endif
         rt = pthread_create(&_thread, &attr, startHook, this);
 #ifdef _NO_EXCEPTION
-        if ( 0 != rt )
+        if (0 != rt)
         {
             __decRef();
-            TBSYS_LOG(ERROR,"%s","ThreadSyscallException");
+            TBSYS_LOG(ERROR, "%s", "ThreadSyscallException");
             return -1;
         }
 #else
-        if( 0 != rt )
+        if (0 != rt)
         {
             __decRef();
             throw ThreadSyscallException(__FILE__, __LINE__, rt);
@@ -138,14 +136,14 @@ int Thread::start(size_t stackSize)
     {
         const int rt = pthread_create(&_thread, 0, startHook, this);
 #ifdef _NO_EXCEPTION
-        if ( 0 != rt )
+        if (0 != rt)
         {
             __decRef();
-            TBSYS_LOG(ERROR,"%s","ThreadSyscallException");
+            TBSYS_LOG(ERROR, "%s", "ThreadSyscallException");
             return -1;
         }
 #else
-        if( 0 != rt ) 
+        if (0 != rt)
         {
             __decRef();
             throw ThreadSyscallException(__FILE__, __LINE__, rt);
@@ -153,16 +151,16 @@ int Thread::start(size_t stackSize)
 #endif
     }
 
-   if ( _detachable )
-   {
-       detach();
-   }
-   _started = true;
-   _running = true;
-   return 0; 
+    if (_detachable)
+    {
+        detach();
+    }
+    _started = true;
+    _running = true;
+    return 0;
 }
 
-bool Thread::isAlive() const 
+bool Thread::isAlive() const
 {
     return _running;
 }
@@ -175,11 +173,11 @@ void Thread::_done()
 
 int Thread::join()
 {
-    if(_detachable)
+    if (_detachable)
     {
 #ifdef _NO_EXCEPTION
-        TBSYS_LOG(ERROR,"%s","BadThreadControlException");
-        JUST_RETURN( _detachable==true , -1);
+        TBSYS_LOG(ERROR, "%s", "BadThreadControlException");
+        JUST_RETURN(_detachable == true, -1);
 #else
         throw BadThreadControlException(__FILE__, __LINE__);
 #endif
@@ -187,13 +185,13 @@ int Thread::join()
 
     const int rt = pthread_join(_thread, NULL);
 #ifdef _NO_EXCEPTION
-    if ( 0 != rt )
+    if (0 != rt)
     {
-        TBSYS_LOG(ERROR,"%s","ThreadSyscallException");
+        TBSYS_LOG(ERROR, "%s", "ThreadSyscallException");
         return -1;
     }
 #else
-    if( 0 != rt )
+    if (0 != rt)
     {
         throw ThreadSyscallException(__FILE__, __LINE__, rt);
     }
@@ -203,11 +201,11 @@ int Thread::join()
 
 int Thread::detach()
 {
-    if(!_detachable)
+    if (!_detachable)
     {
 #ifdef _NO_EXCEPTION
-        TBSYS_LOG(ERROR,"%s","BadThreadControlException");
-        JUST_RETURN( _detachable==false, -1 );
+        TBSYS_LOG(ERROR, "%s", "BadThreadControlException");
+        JUST_RETURN(_detachable == false, -1);
 #else
         throw BadThreadControlException(__FILE__, __LINE__);
 #endif
@@ -215,13 +213,13 @@ int Thread::detach()
 
     const int rt = pthread_detach(_thread);
 #ifdef _NO_EXCEPTION
-    if ( 0 != rt )
+    if (0 != rt)
     {
-        TBSYS_LOG(ERROR,"%s","ThreadSyscallException");
+        TBSYS_LOG(ERROR, "%s", "ThreadSyscallException");
         return -1;
     }
 #else
-    if(  0 != rt ) 
+    if (0 != rt)
     {
         throw ThreadSyscallException(__FILE__, __LINE__, rt);
     }
@@ -229,13 +227,13 @@ int Thread::detach()
     return 0;
 }
 
-
 pthread_t Thread::id() const
 {
-    return _thread;;
+    return _thread;
+    ;
 }
 
-void Thread::ssleep(const tbutil::Time& timeout)
+void Thread::ssleep(const tbutil::Time &timeout)
 {
     struct timeval tv = timeout;
     struct timespec ts;
@@ -248,4 +246,4 @@ void Thread::yield()
 {
     sched_yield();
 }
-}//end namespace tbutil
+} //end namespace tbutil
